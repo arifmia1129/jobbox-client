@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import auth from "../../firebase/firebase.config"
 
 const initialState = {
@@ -21,6 +21,13 @@ export const loginUser = createAsyncThunk(
         return data.user.email;
     }
 )
+export const googleLogin = createAsyncThunk(
+    "auth/googleLogin", async () => {
+        const provider = new GoogleAuthProvider();
+        const data = await signInWithPopup(auth, provider);
+        return data.user.email;
+    }
+)
 
 const authSlice = createSlice({
     name: "auth",
@@ -28,6 +35,10 @@ const authSlice = createSlice({
     reducers: {
         logOut: (state) => {
             state.email = "";
+        },
+        setUser: (state, { payload }) => {
+            state.email = payload;
+            state.isLoading = false;
         }
     },
     extraReducers: (builder) => {
@@ -68,10 +79,28 @@ const authSlice = createSlice({
                 state.error = action.error.message;
                 state.email = "";
             })
+            .addCase(googleLogin.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+                state.error = "";
+                state.email = "";
+            })
+            .addCase(googleLogin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.error = "";
+                state.email = action.payload;
+            })
+            .addCase(googleLogin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.error = action.error.message;
+                state.email = "";
+            })
     }
 })
 
 
-export const { logOut } = authSlice.actions;
+export const { logOut, setUser } = authSlice.actions;
 
 export default authSlice.reducer;
