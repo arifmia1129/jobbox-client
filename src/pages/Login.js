@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
@@ -10,13 +11,19 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { email, isLoading } = useSelector(state => state.auth);
+  const { email, isLoading, isError, error } = useSelector(state => state.auth);
 
   useEffect(() => {
     if (!isLoading && email) {
       navigate("/");
     }
   }, [isLoading, email, navigate])
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(error);
+    }
+  }, [isError, error])
 
   const onSubmit = (data) => {
     dispatch(loginUser(data));
