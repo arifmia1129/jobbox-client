@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
+import { useCrateUserMutation } from "../../features/auth/authApi";
+import { toast } from "react-hot-toast";
 
 const CandidateRegistration = () => {
   const [countries, setCountries] = useState([]);
-  const { handleSubmit, register, control } = useForm();
+  const { handleSubmit, register, control, reset } = useForm();
   const term = useWatch({ control, name: "term" });
-  console.log(term);
   const navigate = useNavigate();
+
+  const [createUser, { isLoading, isSuccess, isError }] = useCrateUserMutation();
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
@@ -16,9 +19,25 @@ const CandidateRegistration = () => {
       .then((data) => setCountries(data));
   }, []);
 
+  useEffect(() => {
+    if (isError) {
+      toast.error("Candidate not create")
+    }
+    if (isSuccess) {
+      toast.success("Successfully create candidate");
+      reset();
+    }
+  }, [isError, isSuccess, reset])
+
   const onSubmit = (data) => {
-    console.log(data);
+    createUser({ ...data, role: "candidate" })
   };
+
+  if (isLoading) {
+    return <div className="h-screen flex justify-center items-center">
+      <p>Loading...</p>
+    </div>
+  }
 
   return (
     <div className='pt-14'>
