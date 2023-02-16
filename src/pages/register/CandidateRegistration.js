@@ -4,10 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
 import { useCrateUserMutation } from "../../features/auth/authApi";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../../components/reusable/Loading";
 
 const CandidateRegistration = () => {
   const [countries, setCountries] = useState([]);
-  const { handleSubmit, register, control, reset } = useForm();
+  const { user: { email, role } } = useSelector(state => state.auth);
+  const { handleSubmit, register, control, reset } = useForm({
+    defaultValues: {
+      email
+    }
+  });
   const term = useWatch({ control, name: "term" });
   const navigate = useNavigate();
 
@@ -29,14 +36,18 @@ const CandidateRegistration = () => {
     }
   }, [isError, isSuccess, reset])
 
+  useEffect(() => {
+    if (email && role) {
+      navigate("/dashboard")
+    }
+  }, [email, role, navigate])
+
   const onSubmit = (data) => {
     createUser({ ...data, role: "candidate" })
   };
 
   if (isLoading) {
-    return <div className="h-screen flex justify-center items-center">
-      <p>Loading...</p>
-    </div>
+    return <Loading />
   }
 
   return (
@@ -70,7 +81,7 @@ const CandidateRegistration = () => {
             <label className='mb-2' htmlFor='email'>
               Email
             </label>
-            <input type='email' id='email' {...register("email")} />
+            <input disabled className="cursor-not-allowed" type='email' id='email' {...register("email")} />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
             <h1 className='mb-3'>Gender</h1>

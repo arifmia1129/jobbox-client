@@ -2,13 +2,45 @@ import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
+import { toast } from "react-hot-toast";
+import { useCrateUserMutation } from "../../features/auth/authApi";
+import { useSelector } from "react-redux";
+import Loading from "../../components/reusable/Loading";
 
 const EmployerRegistration = () => {
   const [countries, setCountries] = useState([]);
-
-  const { handleSubmit, register, control } = useForm();
+  const { user: { email, role } } = useSelector(state => state.auth);
+  const { handleSubmit, register, control, reset } = useForm({
+    defaultValues: {
+      email
+    }
+  });
   const term = useWatch({ control, name: "term" });
   const navigate = useNavigate();
+
+  const [createUser, { isLoading, isSuccess, isError }] = useCrateUserMutation();
+
+  useEffect(() => {
+    fetch("https://restcountries.com/v3.1/all")
+      .then((res) => res.json())
+      .then((data) => setCountries(data));
+  }, []);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("Candidate not create")
+    }
+    if (isSuccess) {
+      toast.success("Successfully create candidate");
+      reset();
+    }
+  }, [isError, isSuccess, reset])
+
+  useEffect(() => {
+    if (email && role) {
+      navigate("/dashboard")
+    }
+  }, [email, role, navigate])
 
   const businessCategory = [
     "Automotive",
@@ -40,9 +72,11 @@ const EmployerRegistration = () => {
   }, []);
 
   const onSubmit = (data) => {
-    console.log(data);
+    createUser({ ...data, role: "employee" })
   };
-
+  if (isLoading) {
+    return <Loading />
+  }
   return (
     <div className='pt-14'>
       <div
@@ -74,7 +108,7 @@ const EmployerRegistration = () => {
             <label className='mb-2' htmlFor='email'>
               Email
             </label>
-            <input type='email' id='email' disabled {...register("email")} />
+            <input disabled className="cursor-not-allowed" type='email' id='email'  {...register("email")} />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
             <h1 className='mb-3'>Gender</h1>

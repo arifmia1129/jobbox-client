@@ -11,7 +11,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { email, isLoading, isError, error } = useSelector(state => state.auth);
+  const { user: { email }, isLoading, isError, error } = useSelector(state => state.auth);
 
   useEffect(() => {
     if (!isLoading && email) {
