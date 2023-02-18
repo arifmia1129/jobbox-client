@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
-import { useGetJobByIdQuery } from "../features/job/jobApi";
-import { useParams } from "react-router-dom";
+import { useApplyToJobMutation, useGetJobByIdQuery, useQueryMutation, useReplyMutation } from "../features/job/jobApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 const JobDetails = () => {
   const { id } = useParams();
 
-  const { data } = useGetJobByIdQuery(id);
+  const [question, setQuestion] = useState("");
+  const [reply, setReply] = useState("");
+
+  const navigate = useNavigate();
+
+  const { data } = useGetJobByIdQuery(id, { pollingInterval: 1000 });
 
   const { job } = data || {};
+
+  const { user: { email, role } } = useSelector(state => state.auth);
 
   const {
     companyName,
@@ -27,6 +36,43 @@ const JobDetails = () => {
     _id,
   } = job || {};
 
+  const [apply] = useApplyToJobMutation();
+  const [sendQuestion] = useQueryMutation();
+  const [sendReply] = useReplyMutation();
+
+  const handleJobApply = () => {
+    if (role === "employee") {
+      return toast.error("Need a candidate account to apply job");
+    }
+
+    if (!email) {
+      return navigate("/login");
+    }
+
+    if (!role) {
+      return navigate("/register");
+    }
+
+    apply({ id: _id, email });
+  }
+
+  const handleSendQuestion = () => {
+    const userQuestion = {
+      email,
+      jobId: _id,
+      question
+    }
+    sendQuestion(userQuestion);
+  }
+
+  const handleReply = (email) => {
+    sendReply({
+      jobId: _id,
+      reply,
+      email
+    })
+  }
+
   return (
     <div className='pt-14 grid grid-cols-12 gap-5 p-20'>
       <div className='col-span-9 mb-10'>
@@ -36,7 +82,7 @@ const JobDetails = () => {
         <div className='space-y-5'>
           <div className='flex justify-between items-center mt-5'>
             <h1 className='text-xl font-semibold text-primary'>{position}</h1>
-            <button className='btn'>Apply</button>
+            <button onClick={handleJobApply} className='btn'>Apply</button>
           </div>
           <div>
             <h1 className='text-primary text-lg font-medium mb-3'>Overview</h1>
@@ -94,32 +140,29 @@ const JobDetails = () => {
                     </p>
                   ))}
 
-                  <div className='flex gap-3 my-5'>
-                    <input placeholder='Reply' type='text' className='w-full' />
-                    <button
-                      className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white'
-                      type='button'
-                    >
+                  {role === "employee" && <div className='flex gap-3 my-5'>
+                    <input onChange={e => setReply(e.target.value)} placeholder='Reply' type='text' className='w-full' />
+                    <button onClick={() => handleReply(email)} className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white' type="button">
                       <BsArrowRightShort size={30} />
                     </button>
-                  </div>
+                  </div>}
                 </div>
               ))}
             </div>
 
-            <div className='flex gap-3 my-5'>
-              <input
-                placeholder='Ask a question...'
-                type='text'
-                className='w-full'
-              />
-              <button
-                className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white'
-                type='button'
-              >
-                <BsArrowRightShort size={30} />
-              </button>
-            </div>
+            {
+              role === "candidate" && <div className='flex gap-3 my-5'>
+                <input
+                  onChange={e => setQuestion(e.target.value)}
+                  placeholder='Ask a question...'
+                  type='text'
+                  className='w-full'
+                />
+                <button onClick={handleSendQuestion} className='btn'>
+                  <BsArrowRightShort size={30} />
+                </button>
+              </div>
+            }
           </div>
         </div>
       </div>

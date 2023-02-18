@@ -1,8 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const JobCard = ({ job }) => {
   const navigate = useNavigate();
+
+  const { pathname } = useLocation();
+
   const { _id, position, companyName, location, employmentType } =
     job || {};
 
@@ -25,9 +28,11 @@ const JobCard = ({ job }) => {
       </div>
       <div className='flex justify-between items-center mt-5'>
         <p>{employmentType}</p>
-        <button className='btn' onClick={() => navigate(`/job-details/${_id}`)}>
-          Details
-        </button>
+        {
+          !(pathname === "/dashboard/applied-jobs") && <button className='btn' onClick={() => navigate(`/job-details/${_id}`)}>
+            Details
+          </button>
+        }
       </div>
     </div>
   );

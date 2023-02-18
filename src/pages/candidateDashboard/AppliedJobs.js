@@ -9,17 +9,16 @@ const AppliedJobs = () => {
     user: { email },
   } = useSelector((state) => state.auth);
   const { data, isLoading } = useGetAppliedJobsQuery(email);
-
   if (isLoading) {
     return <Loading />;
   }
 
   return (
-    <div>
+    <div className="p-5">
       <h1 className='text-xl py-5'>Applied jobs</h1>
       <div className='grid grid-cols-2 gap-5 pb-5'>
-        {data?.data?.map((job) => (
-          <JobCard jobData={job} />
+        {data?.jobs?.map((job) => (
+          <JobCard job={job} />
         ))}
       </div>
     </div>
