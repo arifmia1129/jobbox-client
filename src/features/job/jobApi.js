@@ -10,6 +10,14 @@ const jobApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Job"]
         }),
+        toggleJobStatus: build.mutation({
+            query: (statusInfo) => ({
+                method: "POST",
+                url: "/api/job/status",
+                body: statusInfo
+            }),
+            invalidatesTags: ["Job"]
+        }),
         applyToJob: build.mutation({
             query: (applyInfo) => ({
                 method: "POST",
@@ -53,4 +61,4 @@ const jobApi = apiSlice.injectEndpoints({
     })
 })
 
-export const { useCreateJobMutation, useGetJobsQuery, useGetJobByIdQuery, useApplyToJobMutation, useGetAppliedJobsQuery, useQueryMutation, useReplyMutation } = jobApi;
+export const { useCreateJobMutation, useGetJobsQuery, useGetJobByIdQuery, useApplyToJobMutation, useGetAppliedJobsQuery, useQueryMutation, useReplyMutation, useToggleJobStatusMutation } = jobApi;

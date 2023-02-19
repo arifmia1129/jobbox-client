@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useCreateJobMutation } from "../../features/job/jobApi";
 
 const AddJob = () => {
-  const { user: { companyName } } = useSelector(state => state.auth);
+  const { user: { companyName, email } } = useSelector(state => state.auth);
   const [createJob, { isLoading }] = useCreateJobMutation();
   const { handleSubmit, register, control } = useForm({
     defaultValues: {
@@ -29,7 +29,7 @@ const AddJob = () => {
   } = useFieldArray({ control, name: "requirements" });
 
   const onSubmit = (data) => {
-    createJob({ ...data, applicants: [], queries: [] });
+    createJob({ email, ...data, applicants: [], queries: [] });
   };
 
   return (

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
-import { useApplyToJobMutation, useGetJobByIdQuery, useQueryMutation, useReplyMutation } from "../features/job/jobApi";
+import { useApplyToJobMutation, useGetJobByIdQuery, useQueryMutation, useReplyMutation, useToggleJobStatusMutation } from "../features/job/jobApi";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
@@ -34,11 +34,15 @@ const JobDetails = () => {
     overview,
     queries,
     _id,
+    email: employeeEmail,
+    applicants,
+    jobStatus
   } = job || {};
 
   const [apply] = useApplyToJobMutation();
   const [sendQuestion] = useQueryMutation();
   const [sendReply] = useReplyMutation();
+  const [toggleJobStatus] = useToggleJobStatusMutation();
 
   const handleJobApply = () => {
     if (role === "employee") {
@@ -73,6 +77,13 @@ const JobDetails = () => {
     })
   }
 
+  const handleToggleJobStatus = (statusCode) => {
+    toggleJobStatus({
+      jobId: _id,
+      statusCode
+    })
+  }
+
   return (
     <div className='pt-14 grid grid-cols-12 gap-5 p-20'>
       <div className='col-span-9 mb-10'>
@@ -82,8 +93,30 @@ const JobDetails = () => {
         <div className='space-y-5'>
           <div className='flex justify-between items-center mt-5'>
             <h1 className='text-xl font-semibold text-primary'>{position}</h1>
-            <button onClick={handleJobApply} className='btn'>Apply</button>
+            <div>
+
+              {
+                (role === "employee" && jobStatus) && <button onClick={() => handleToggleJobStatus(0)} className='btn mx-1'>Close Job</button>
+
+              }
+              {
+                (role === "employee" && !jobStatus) && <button onClick={() => handleToggleJobStatus(1)} className='btn mx-1'>Open Job</button>
+
+              }
+              {
+                (role === "candidate" && jobStatus && !applicants.includes(email)) && <button onClick={handleJobApply} className='btn mx-1'>Apply</button>
+              }
+              {
+                (role === "candidate" && applicants.includes(email)) && <p className="text-green-500">Already applied</p>
+              }
+            </div>
           </div>
+          {
+            (role === "employee" && email === employeeEmail) && <div>
+              <h1 className='text-primary text-lg font-medium mb-3'>Total applicants</h1>
+              <p>{applicants.length}</p>
+            </div>
+          }
           <div>
             <h1 className='text-primary text-lg font-medium mb-3'>Overview</h1>
             <p>{overview}</p>
