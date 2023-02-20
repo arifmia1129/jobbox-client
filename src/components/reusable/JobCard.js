@@ -29,8 +29,13 @@ const JobCard = ({ job }) => {
       <div className='flex justify-between items-center mt-5'>
         <p>{employmentType}</p>
         {
-          !(pathname === "/dashboard/applied-jobs") && <button className='btn' onClick={() => navigate(`/job-details/${_id}`)}>
+          (pathname === "/jobs") && <button className='btn' onClick={() => navigate(`/job-details/${_id}`)}>
             Details
+          </button>
+        }
+        {
+          (pathname === "/dashboard/employer") && <button className='btn' onClick={() => navigate(`/dashboard/applicants/${_id}`)}>
+            Total Applicants
           </button>
         }
       </div>

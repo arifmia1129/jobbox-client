@@ -84,6 +84,8 @@ const JobDetails = () => {
     })
   }
 
+  const existApplicant = applicants?.find(application => application.email === email);
+
   return (
     <div className='pt-14 grid grid-cols-12 gap-5 p-20'>
       <div className='col-span-9 mb-10'>
@@ -96,18 +98,23 @@ const JobDetails = () => {
             <div>
 
               {
-                (role === "employee" && jobStatus) && <button onClick={() => handleToggleJobStatus(0)} className='btn mx-1'>Close Job</button>
+                (role === "employee" && jobStatus && email === employeeEmail) && <button onClick={() => handleToggleJobStatus(0)} className='btn mx-1'>Close Job</button>
+
+              }
+
+              {
+                (role === "employee" && !jobStatus && email === employeeEmail) && <button onClick={() => handleToggleJobStatus(1)} className='btn mx-1'>Open Job</button>
 
               }
               {
-                (role === "employee" && !jobStatus) && <button onClick={() => handleToggleJobStatus(1)} className='btn mx-1'>Open Job</button>
+                (role === "employee" && email === employeeEmail) && <button onClick={() => navigate(`/dashboard/applicants/${_id}`)} className='btn mx-1'>Chat With Applicants</button>
 
               }
               {
-                (role === "candidate" && jobStatus && !applicants.includes(email)) && <button onClick={handleJobApply} className='btn mx-1'>Apply</button>
+                (role === "candidate" && jobStatus && !existApplicant) && <button onClick={handleJobApply} className='btn mx-1'>Apply</button>
               }
               {
-                (role === "candidate" && applicants.includes(email)) && <p className="text-green-500">Already applied</p>
+                (role === "candidate" && existApplicant) && <p className="text-green-500">Already applied</p>
               }
             </div>
           </div>

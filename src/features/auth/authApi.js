@@ -12,14 +12,18 @@ const authApi = apiSlice.injectEndpoints({
             async onQueryStarted(user, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    console.log(data);
                     dispatch(getUser(user?.email));
                 } catch (error) {
                     // Nothing do
                 }
             }
+        }),
+        getUserByEmail: build.query({
+            query: (email) => ({
+                url: `/api/user/${email}`
+            })
         })
     })
 })
 
-export const { useCrateUserMutation } = authApi;
+export const { useCrateUserMutation, useGetUserByEmailQuery } = authApi;

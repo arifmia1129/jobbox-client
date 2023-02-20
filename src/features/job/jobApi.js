@@ -41,6 +41,22 @@ const jobApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Query"]
         }),
+        sendMessage: build.mutation({
+            query: (message) => ({
+                method: "POST",
+                url: "/api/job/message",
+                body: message
+            }),
+            invalidatesTags: ["Query"]
+        }),
+        replyToMessage: build.mutation({
+            query: (replyMessage) => ({
+                method: "POST",
+                url: "/api/job/reply-message",
+                body: replyMessage
+            }),
+            invalidatesTags: ["Query"]
+        }),
         getJobs: build.query({
             query: () => ({
                 url: "/api/job"
@@ -53,6 +69,12 @@ const jobApi = apiSlice.injectEndpoints({
             }),
             providesTags: ["Query"]
         }),
+        getJobsByEmail: build.query({
+            query: (email) => ({
+                url: `/api/job/employer/${email}`
+            }),
+            providesTags: ["Query"]
+        }),
         getAppliedJobs: build.query({
             query: (email) => ({
                 url: `/api/job/applied/${email}`
@@ -61,4 +83,4 @@ const jobApi = apiSlice.injectEndpoints({
     })
 })
 
-export const { useCreateJobMutation, useGetJobsQuery, useGetJobByIdQuery, useApplyToJobMutation, useGetAppliedJobsQuery, useQueryMutation, useReplyMutation, useToggleJobStatusMutation } = jobApi;
+export const { useCreateJobMutation, useGetJobsQuery, useGetJobByIdQuery, useApplyToJobMutation, useGetAppliedJobsQuery, useQueryMutation, useReplyMutation, useToggleJobStatusMutation, useGetJobsByEmailQuery, useSendMessageMutation, useReplyToMessageMutation } = jobApi;
