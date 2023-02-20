@@ -38,6 +38,11 @@ const JobCard = ({ job }) => {
             Total Applicants
           </button>
         }
+        {
+          (pathname === "/dashboard/candidate-chat") && <button className='btn' onClick={() => navigate(`/dashboard/start-chat/${_id}`)}>
+            Start Chat
+          </button>
+        }
       </div>
     </div>
   );

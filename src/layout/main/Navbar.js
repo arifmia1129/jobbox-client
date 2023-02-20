@@ -46,6 +46,17 @@ const Navbar = () => {
         </li>
         <li>
           {
+            (email && role === "candidate") &&
+            <Link
+              className='border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all '
+              to='/dashboard/candidate-chat'
+            >
+              Chat
+            </Link>
+          }
+        </li>
+        <li>
+          {
             (email && role) ? <Link
               className='border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all '
               to='/dashboard'
