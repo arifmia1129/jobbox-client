@@ -111,6 +111,10 @@ const JobDetails = () => {
 
               }
               {
+                (role === "employee" && email === employeeEmail) && <button onClick={() => navigate(`/dashboard/applicants/${_id}`)} className='btn mx-1'>Total Applicant</button>
+
+              }
+              {
                 (role === "candidate" && jobStatus && !existApplicant) && <button onClick={handleJobApply} className='btn mx-1'>Apply</button>
               }
               {

@@ -76,8 +76,8 @@ const jobApi = apiSlice.injectEndpoints({
             providesTags: ["Query"]
         }),
         getAppliedJobs: build.query({
-            query: (email) => ({
-                url: `/api/job/applied/${email}`
+            query: ({ email, sort }) => ({
+                url: `/api/job/applied/${email}/${sort}`
             })
         }),
     })
