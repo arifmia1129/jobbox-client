@@ -17,7 +17,7 @@ export const createUser = createAsyncThunk(
 )
 export const getUser = createAsyncThunk(
     "auth/getUser", async (email) => {
-        const res = await fetch(`http://localhost:8080/api/user/${email}`);
+        const res = await fetch(`https://jobbox-server-112o.onrender.com/api/user/${email}`);
         const data = await res.json();
 
         if (data.success) {
@@ -45,7 +45,7 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         logOut: (state) => {
-            state.user = {email:"", role:""};
+            state.user = { email: "", role: "" };
         },
         setUser: (state, { payload }) => {
             state.user.email = payload;
